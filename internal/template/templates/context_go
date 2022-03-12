@@ -1,0 +1,64 @@
+package rtinfo
+
+import (
+	"context"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+)
+
+var (
+	ch     chan os.Signal
+	ctx    context.Context
+	cancel func()
+)
+
+func Context() context.Context { return ctx }
+func Stop()                    { ch <- syscall.SIGUSR1 }
+
+func Wait(funcs ...func()) {
+	<-ctx.Done()
+
+	for _, fn := range funcs {
+		fn()
+	}
+}
+
+func WaitAsync(funcs ...func()) {
+	<-ctx.Done()
+
+	if len(funcs) > 0 {
+		var wg sync.WaitGroup
+
+		wg.Add(len(funcs))
+		for _, fn := range funcs {
+			fn := fn
+			go func() {
+				defer wg.Done()
+				fn()
+			}()
+		}
+
+		wg.Wait()
+	}
+}
+
+func init() {
+	ctx, cancel = context.WithCancel(context.Background())
+	ch = make(chan os.Signal, 1)
+	go func() {
+		defer cancel()
+
+		signal.Notify(ch,
+			syscall.SIGINT,
+			syscall.SIGHUP,
+			syscall.SIGTERM,
+			syscall.SIGQUIT,
+			syscall.SIGTRAP,
+			syscall.SIGABRT,
+		)
+
+		<-ch
+	}()
+}

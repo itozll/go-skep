@@ -1,0 +1,24 @@
+// run-time type information
+
+package rtinfo
+
+import (
+	"os"
+	"path/filepath"
+	"time"
+)
+
+var (
+	Debug   bool
+	Verbose bool
+
+	version     = "0.1.0"
+	compileTime = time.Now().UTC().Format(time.RFC3339)
+	appName     = filepath.Base(os.Args[0])
+	hostname, _ = os.Hostname()
+)
+
+func AppName() string     { return appName }
+func Version() string     { return version }
+func CompileTime() string { return compileTime }
+func Hostname() string    { return hostname }

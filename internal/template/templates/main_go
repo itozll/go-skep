@@ -1,0 +1,12 @@
+package main
+
+import "{{ .github -}}/app/cmd"
+
+//go:generate bash generator.sh
+
+// @title base
+// @version 0.1.0
+// @description {something}
+func main() {
+	cmd.Execute()
+}

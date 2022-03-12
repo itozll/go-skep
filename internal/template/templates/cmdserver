@@ -1,0 +1,34 @@
+package cmd
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+var {{ .command }}Cmd = &cobra.Command{
+	Use:     "{{ .command }} [flags] <workspace>",
+	Aliases: []string{"n"},
+	Short:   "create an ncw workspace",
+	Example: `  {{ .command }} --group mygroup myrepos
+  {{ .command }} mygroup/myrepos
+`,
+	SilenceUsage: true,
+
+	// PreRunE: func(cmd *cobra.Command, args []string) error {
+	// 	return nil
+	// },
+
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Hello {{ .command }}")
+		return nil
+	},
+
+	// PostRunE: func(cmd *cobra.Command, args []string) error {
+	// 	return nil
+	// },
+}
+
+func init() {
+	{{ .parent_cmd }}Cmd.AddCommand({{ .command }}Cmd)
+}
