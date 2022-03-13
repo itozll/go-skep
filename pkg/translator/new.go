@@ -24,6 +24,22 @@ func New2(str string) *CmdNew {
 	err := json.Unmarshal([]byte(str), &etc)
 	rtstatus.ExitIfError(err)
 
+	if !rtinfo.FlagSkipGit.Changed && etc.SkipGit {
+		rtinfo.SkipGit = true
+	}
+
+	if !rtinfo.FlagGroup.Changed && etc.Group != "" {
+		rtinfo.Group = etc.Group
+	}
+
+	if !rtinfo.FlagGoVersion.Changed && etc.GoVersion != "" {
+		rtinfo.GoVersion = etc.GoVersion
+	}
+
+	if rtinfo.Workspace == "" {
+		rtinfo.Workspace = etc.Workspace
+	}
+
 	return New(&etc)
 }
 
@@ -32,30 +48,6 @@ func (c *CmdNew) Run() error {
 }
 
 func (c *CmdNew) Translate() *generator.Command {
-	if c.etc.SkipGit == "true" && rtinfo.OSkipGit != "false" {
-		rtinfo.SkipGit = true
-	}
-
-	if rtinfo.OGroup != "" {
-		rtinfo.Group = rtinfo.OGroup
-	} else if c.etc.Group != "" {
-		rtinfo.Group = c.etc.Group
-	} else {
-		rtinfo.Group = rtinfo.DefaultGroup
-	}
-
-	if rtinfo.OGoVersion != "" {
-		rtinfo.GoVersion = rtinfo.OGoVersion
-	} else if c.etc.GoVersion != "" {
-		rtinfo.GoVersion = c.etc.GoVersion
-	} else {
-		rtinfo.GoVersion = rtinfo.DefaultGoVersion
-	}
-
-	if rtinfo.Workspace == "" {
-		rtinfo.Workspace = c.etc.Workspace
-	}
-
 	rtinfo.Init(rtinfo.Workspace)
 	rtinfo.Binder()["command"] = "server"
 

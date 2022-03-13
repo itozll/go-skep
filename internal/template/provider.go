@@ -1,7 +1,9 @@
 package template
 
 import (
+	"errors"
 	"io/fs"
+	"os"
 	"strings"
 
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
@@ -23,7 +25,7 @@ func newProvide(path string, f provider) tmpl.Provider {
 }
 
 func (p *provide) ReadFile(name string) []byte {
-	data, err := p.f.ReadFile(p.path + name)
+	data, err := p.get(p.path + name)
 	rtstatus.ExitIfError(err)
 	return data
 }
@@ -32,4 +34,20 @@ func (p *provide) ReadDir(name string) []fs.DirEntry {
 	de, err := p.f.ReadDir(p.path + name)
 	rtstatus.ExitIfError(err)
 	return de
+}
+
+func (p *provide) get(name string) ([]byte, error) {
+	data, err := p.f.ReadFile(name)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			// try <name>.tpl
+			if !strings.HasSuffix(name, ".tpl") {
+				return p.get(name + ".tpl")
+			}
+		}
+
+		rtstatus.Fatal("\n  ** can not get template[%s]: %s.", name, err)
+	}
+
+	return data, nil
 }

@@ -19,5 +19,4 @@ func GetTemplateProvider(name string) Provider {
 
 func AddTemplateProvider(name string, p Provider) {
 	_s[name] = p
-	rtstatus.Info("template", name)
 }

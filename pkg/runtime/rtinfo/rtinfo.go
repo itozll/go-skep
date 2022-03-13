@@ -20,4 +20,6 @@ var (
 	Group   string
 	Project string
 	SkipGit bool
+
+	Data string
 )

@@ -1,7 +1,7 @@
 package etcd
 
 type New struct {
-	SkipGit   string `json:"skip_git,omitempty" yaml:"skip_git"`
+	SkipGit   bool   `json:"skip_git,omitempty" yaml:"skip_git"`
 	Group     string `json:"group,omitempty" yaml:"group"`
 	GoVersion string `json:"go_version,omitempty" yaml:"go_version"`
 	Workspace string `json:"workspace,omitempty" yaml:"workspace"`

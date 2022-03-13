@@ -9,10 +9,7 @@ import (
 var {{ .command }}Cmd = &cobra.Command{
 	Use:     "{{ .command }} [flags] <workspace>",
 	Aliases: []string{"n"},
-	Short:   "create an ncw workspace",
-	Example: `  {{ .command }} --group mygroup myrepos
-  {{ .command }} mygroup/myrepos
-`,
+	Short:   "create an go workspace",
 	SilenceUsage: true,
 
 	// PreRunE: func(cmd *cobra.Command, args []string) error {
