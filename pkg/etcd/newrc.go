@@ -1,17 +1,10 @@
 package etcd
 
-type New struct {
-	SkipGit   bool   `json:"skip_git,omitempty" yaml:"skip_git"`
-	Group     string `json:"group,omitempty" yaml:"group"`
-	GoVersion string `json:"go_version,omitempty" yaml:"go_version"`
-	Workspace string `json:"workspace,omitempty" yaml:"workspace"`
+import "github.com/itozll/go-skep/pkg/model/entity"
 
-	Resource `json:",inline" yaml:",inline"`
-}
-
-var NewEtc = &New{
-	Resource: Resource{
-		Actions: []*Action{
+var NewEtc = &entity.New{
+	Resource: entity.Resource{
+		Actions: []*entity.Action{
 			{
 				Template: []string{
 					"README:.md",

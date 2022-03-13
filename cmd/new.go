@@ -9,8 +9,8 @@ import (
 	"os"
 
 	"github.com/itozll/go-skep/pkg/etcd"
+	"github.com/itozll/go-skep/pkg/model"
 	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
-	"github.com/itozll/go-skep/pkg/translator"
 	"github.com/spf13/cobra"
 )
 
@@ -24,26 +24,30 @@ var newCmd = &cobra.Command{
 `, appName, appName),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var c *translator.CmdNew
+		var m *model.New
 
-		if rtinfo.Data == "" {
-			c = translator.New(etcd.NewEtc)
-		} else {
+		switch {
+		case rtinfo.File != "":
+			m = model.NewNewWithFile(rtinfo.File, rtinfo.FileType)
+
+		case rtinfo.Data != "":
 			// --data '{}'
-			c = translator.New2(rtinfo.Data)
+			m = model.NewNewWithJSON([]byte(rtinfo.Data))
+
+		default:
+			m = model.NewNew(etcd.NewEtc)
 		}
 
-		return c.Run()
+		return m.Command().Exec()
 	},
 
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) == 1 {
-			rtinfo.Workspace = args[0]
-		} else if rtinfo.Data == "" {
+		if len(args) != 1 {
 			cmd.Help()
 			os.Exit(1)
 		}
 
+		rtinfo.Workspace = args[0]
 		return nil
 	},
 }
@@ -51,5 +55,5 @@ var newCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(newCmd)
 
-	newCmd.Flags().AddFlagSet(rtinfo.CmdNewFlagSet())
+	newCmd.Flags().AddFlagSet(rtinfo.CmdNewFlagSet)
 }

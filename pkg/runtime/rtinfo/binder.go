@@ -38,7 +38,7 @@ func Init(workspace string) map[string]interface{} {
 	Group = groupName
 
 	m["github"] = Github
-	m["go_version"] = GoVersion
+	m["go"] = Go
 	return m
 }
 

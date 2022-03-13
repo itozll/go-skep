@@ -1,57 +1,59 @@
-package translator
+package model
 
 import (
 	"encoding/json"
 	"os"
 
-	"github.com/itozll/go-skep/pkg/etcd"
 	"github.com/itozll/go-skep/pkg/generator"
+	"github.com/itozll/go-skep/pkg/model/entity"
 	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
+	"gopkg.in/yaml.v2"
 )
 
-type CmdNew struct {
-	etc *etcd.New
+type New struct {
+	eni *entity.New
 }
 
-func New(etc *etcd.New) *CmdNew {
-	return &CmdNew{etc: etc}
+func NewNew(eni *entity.New) *New {
+	return &New{eni: eni}
 }
 
-func New2(str string) *CmdNew {
-	var etc = etcd.New{}
-	err := json.Unmarshal([]byte(str), &etc)
+func NewNewWithJSON(data []byte) *New {
+	var eni = &entity.New{}
+	err := json.Unmarshal(data, &eni)
 	rtstatus.ExitIfError(err)
-
-	if !rtinfo.FlagSkipGit.Changed && etc.SkipGit {
-		rtinfo.SkipGit = true
-	}
-
-	if !rtinfo.FlagGroup.Changed && etc.Group != "" {
-		rtinfo.Group = etc.Group
-	}
-
-	if !rtinfo.FlagGoVersion.Changed && etc.GoVersion != "" {
-		rtinfo.GoVersion = etc.GoVersion
-	}
-
-	if rtinfo.Workspace == "" {
-		rtinfo.Workspace = etc.Workspace
-	}
-
-	return New(&etc)
+	eni.Parse()
+	return NewNew(eni)
 }
 
-func (c *CmdNew) Run() error {
-	return c.Translate().Exec()
+func NewNewWithYaml(data []byte) *New {
+	var eni = &entity.New{}
+	err := yaml.Unmarshal([]byte(data), &eni)
+	rtstatus.ExitIfError(err)
+	eni.Parse()
+	return NewNew(eni)
 }
 
-func (c *CmdNew) Translate() *generator.Command {
+func NewNewWithFile(name, fileType string) *New {
+	data := process.ReadFile(rtinfo.File)
+	switch fileType {
+	case "yaml":
+		return NewNewWithYaml(data)
+	case "json":
+		return NewNewWithJSON(data)
+	}
+
+	rtstatus.Error("not support file type (%s)", rtinfo.FileType)
+	return nil
+}
+
+func (m *New) Command() *generator.Command {
 	rtinfo.Init(rtinfo.Workspace)
 	rtinfo.Binder()["command"] = "server"
 
-	command := generator.New(&c.etc.Resource)
+	command := generator.NewCommand(&m.eni.Resource)
 
 	command.Path = rtinfo.Project + "/"
 	before := command.Before
@@ -81,7 +83,13 @@ func (c *CmdNew) Translate() *generator.Command {
 				[]string{"git", "commit", "-m", "Init Commit"},
 			)
 		}
-		cmds = append(cmds, c.etc.After)
+		cmds = append(cmds, m.eni.After)
+
+		data, err := yaml.Marshal(rtinfo.Binder())
+		if err == nil {
+			os.WriteFile("skeprc.yml", data, 0644)
+		}
+
 		return process.Run(cmds...)
 	}
 	return command

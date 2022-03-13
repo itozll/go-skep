@@ -10,7 +10,7 @@ var (
 )
 
 var (
-	GoVersion string
+	Go string
 
 	// Workspace = [Group/]<Project>
 	Workspace string
@@ -21,5 +21,7 @@ var (
 	Project string
 	SkipGit bool
 
-	Data string
+	Data     string
+	File     string
+	FileType string
 )

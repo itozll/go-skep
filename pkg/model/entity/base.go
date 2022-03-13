@@ -1,4 +1,8 @@
-package etcd
+package entity
+
+type Resourcer interface {
+	GetResource() *Resource
+}
 
 type Resource struct {
 	Before []string `json:"before,omitempty" yaml:"before"`
@@ -9,6 +13,8 @@ type Resource struct {
 
 	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
 }
+
+func (rc *Resource) GetResource() *Resource { return rc }
 
 type Action struct {
 	Before []string `json:"before,omitempty" yaml:"before"`

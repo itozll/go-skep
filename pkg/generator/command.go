@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"github.com/itozll/go-skep/pkg/etcd"
+	"github.com/itozll/go-skep/pkg/model/entity"
 	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
@@ -22,7 +22,7 @@ type Command struct {
 	Actions []*Action
 }
 
-func New(etc *etcd.Resource) *Command {
+func NewCommand(etc *entity.Resource) *Command {
 	c := &Command{
 		Binder: etc.Binder,
 		P:      tmpl.GetTemplateProvider(etc.Provider),
