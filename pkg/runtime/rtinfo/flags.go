@@ -11,6 +11,7 @@ var (
 	FlagJSONData  *pflag.Flag
 	FlagFile      *pflag.Flag
 	FlagFileType  *pflag.Flag
+	FlagParent    *pflag.Flag
 )
 
 func init() {
@@ -22,6 +23,7 @@ func init() {
 	flagSet.StringVarP(&Data, "json", "", "", "customize project with json.")
 	flagSet.StringVarP(&File, "file", "f", "", "customize project with file.")
 	flagSet.StringVarP(&FileType, "file-type", "", "yaml", "file type, support json/yaml")
+	flagSet.StringVarP(&Parent, "parent", "p", "root", `variable name of parent command for this command`)
 
 	FlagGoVersion = flagSet.Lookup("go")
 	FlagSkipGit = flagSet.Lookup("skip-git")
@@ -29,4 +31,5 @@ func init() {
 	FlagJSONData = flagSet.Lookup("json")
 	FlagFile = flagSet.Lookup("file")
 	FlagFileType = flagSet.Lookup("file-type")
+	FlagParent = flagSet.Lookup("parent")
 }

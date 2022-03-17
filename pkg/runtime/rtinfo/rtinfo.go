@@ -7,6 +7,8 @@ const (
 var (
 	DefaultGoVersion = "1.17"
 	DefaultGroup     = ""
+
+	ConfigFile = ".skeprc.yml"
 )
 
 var (
@@ -24,4 +26,6 @@ var (
 	Data     string
 	File     string
 	FileType string
+
+	Parent string
 )

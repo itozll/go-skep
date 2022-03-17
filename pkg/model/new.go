@@ -58,7 +58,7 @@ func (m *New) Command() *generator.Command {
 		delete(rtinfo.Binder(), "command")
 		data, err := yaml.Marshal(rtinfo.Binder())
 		if err == nil {
-			os.WriteFile(".skeprc.yml", data, 0644)
+			os.WriteFile(rtinfo.ConfigFile, data, 0644)
 		}
 
 		return process.Run(cmds...)
