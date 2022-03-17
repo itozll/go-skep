@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/itozll/go-skep/pkg/generator"
@@ -18,35 +17,6 @@ type New struct {
 
 func NewNew(eni *entity.New) *New {
 	return &New{eni: eni}
-}
-
-func NewNewWithJSON(data []byte) *New {
-	var eni = &entity.New{}
-	err := json.Unmarshal(data, &eni)
-	rtstatus.ExitIfError(err)
-	eni.Parse()
-	return NewNew(eni)
-}
-
-func NewNewWithYaml(data []byte) *New {
-	var eni = &entity.New{}
-	err := yaml.Unmarshal([]byte(data), &eni)
-	rtstatus.ExitIfError(err)
-	eni.Parse()
-	return NewNew(eni)
-}
-
-func NewNewWithFile(name, fileType string) *New {
-	data := process.ReadFile(rtinfo.File)
-	switch fileType {
-	case "yaml":
-		return NewNewWithYaml(data)
-	case "json":
-		return NewNewWithJSON(data)
-	}
-
-	rtstatus.Error("not support file type (%s)", rtinfo.FileType)
-	return nil
 }
 
 func (m *New) Command() *generator.Command {

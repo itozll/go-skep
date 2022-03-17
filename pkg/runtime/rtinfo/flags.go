@@ -11,8 +11,6 @@ var (
 	FlagJSONData  *pflag.Flag
 	FlagFile      *pflag.Flag
 	FlagFileType  *pflag.Flag
-
-	CmdNewFlagSet = pflag.NewFlagSet("new", pflag.ExitOnError)
 )
 
 func init() {
@@ -31,16 +29,4 @@ func init() {
 	FlagJSONData = flagSet.Lookup("json")
 	FlagFile = flagSet.Lookup("file")
 	FlagFileType = flagSet.Lookup("file-type")
-
-	// flags for new
-	{
-		flagSet = CmdNewFlagSet
-
-		flagSet.AddFlag(FlagGoVersion)
-		flagSet.AddFlag(FlagSkipGit)
-		flagSet.AddFlag(FlagGroup)
-		flagSet.AddFlag(FlagJSONData)
-		flagSet.AddFlag(FlagFile)
-		flagSet.AddFlag(FlagFileType)
-	}
 }
