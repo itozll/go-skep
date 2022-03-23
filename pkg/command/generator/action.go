@@ -10,10 +10,21 @@ import (
 	"github.com/itozll/go-skep/pkg/command"
 	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
+	"github.com/itozll/go-skep/pkg/tmpl"
 )
 
 type Action struct {
-	Base `json:"base,omitempty" yaml:"base"`
+	Before []string `json:"before,omitempty" yaml:"before"`
+	After  []string `json:"after,omitempty" yaml:"after"`
+
+	before func() error
+	after  func() error
+
+	Binder map[string]interface{} `json:"binder,omitempty" yaml:"binder"`
+	Path   string                 `json:"path,omitempty" yaml:"path"`
+
+	Template string `json:"template,omitempty" yaml:"template"`
+	p        tmpl.Provider
 
 	Parse []string `json:"parse,omitempty" yaml:"parse"`
 	Copy  []string `json:"copy,omitempty" yaml:"copy"`
@@ -23,6 +34,41 @@ type Action struct {
 	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
 }
 
+func (ac *Action) Dir() string                       { return ac.Path }
+func (ac *Action) Provider() tmpl.Provider           { return ac.p }
+func (ac *Action) MapBinder() map[string]interface{} { return ac.Binder }
+
+func (ac *Action) init() {
+	ac.before = process.Command(ac.Before)
+	ac.after = process.Command(ac.After)
+}
+
+func (ac *Action) exec(worker command.WorkerHandler) error {
+	if len(ac.Template) == 0 {
+		ac.p = worker.Provider()
+	} else {
+		ac.p = tmpl.GetTemplateProvider(ac.Template)
+	}
+
+	if ac.Binder == nil {
+		ac.Binder = worker.MapBinder()
+	} else {
+		for key, val := range worker.MapBinder() {
+			if _, ok := ac.Binder[key]; !ok {
+				ac.Binder[key] = val
+			}
+		}
+	}
+
+	if len(ac.Path) > 0 {
+		ac.Path = worker.Dir() + ac.Path + "/"
+	} else {
+		ac.Path = worker.Dir()
+	}
+
+	return nil
+}
+
 func (ac *Action) Exec(worker command.WorkerHandler) (err error) {
 	ac.init()
 
@@ -30,7 +76,7 @@ func (ac *Action) Exec(worker command.WorkerHandler) (err error) {
 		return
 	}
 
-	if err = ac.Base.Exec(worker); err != nil {
+	if err = ac.exec(worker); err != nil {
 		return
 	}
 

@@ -18,18 +18,14 @@ var NewEtc = &generator.New{
 				},
 			},
 			{
-				Base: generator.Base{
-					Path: "app/cmd",
-				},
+				Path: "app/cmd",
 				Parse: []string{
 					"cmdroot::root.go",
 					"cmdserver::server.go",
 				},
 			},
 			{
-				Base: generator.Base{
-					Path: "app/internal/runtime/rtinfo",
-				},
+				Path: "app/internal/runtime/rtinfo",
 				Parse: []string{
 					"context_go::context.go",
 				},

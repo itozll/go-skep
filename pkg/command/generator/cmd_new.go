@@ -74,30 +74,30 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 	return worker
 }
 
-func (eni *New) Parse(cmd *cobra.Command, args []string) {
+func (rc *New) Parse(cmd *cobra.Command, args []string) {
 	flags := cmd.Flags()
 
 	if flags.Changed("group") {
-		eni.Group, _ = cmd.Flags().GetString("group")
+		rc.Group, _ = cmd.Flags().GetString("group")
 	}
 
 	if flags.Changed("skip-git") {
-		eni.SkipGit, _ = cmd.Flags().GetBool("skip-git")
+		rc.SkipGit, _ = cmd.Flags().GetBool("skip-git")
 	}
 
 	if flags.Changed("go") {
-		eni.GoVersion, _ = cmd.Flags().GetString("go")
+		rc.GoVersion, _ = cmd.Flags().GetString("go")
 	}
 
 	if len(args) == 1 {
-		eni.Workspace = args[0]
+		rc.Workspace = args[0]
 	}
 
-	if len(eni.Group) != 0 {
-		initd.Binder.Group = eni.Group
+	if len(rc.Group) != 0 {
+		initd.Binder.Group = rc.Group
 	}
 
-	if len(eni.GoVersion) != 0 {
-		initd.Binder.GoVersion = eni.GoVersion
+	if len(rc.GoVersion) != 0 {
+		initd.Binder.GoVersion = rc.GoVersion
 	}
 }
