@@ -2,92 +2,62 @@ package generator
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
 	"text/template"
 
+	"github.com/itozll/go-skep/pkg/command"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
-	"github.com/itozll/go-skep/pkg/tmpl"
 )
 
 type Action struct {
-	Before func() error
-	After  func() error
+	Base
 
-	P tmpl.Provider
+	Parse []string `json:"parse,omitempty" yaml:"parse"`
+	Copy  []string `json:"copy,omitempty" yaml:"copy"`
 
-	Binder map[string]interface{}
-
-	To       string
-	Template []string
-	Copy     []string
-
-	Script []Script
-
-	Actions []*Action
+	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
 }
 
-// run sed ...
-type Script struct {
-	File  string
-	Flag  string
-	After bool
-}
+func (ac *Action) Exec(worker command.WorkerHandler) (err error) {
+	ac.init()
 
-func (ac *Action) Exec(path string, p tmpl.Provider, binder map[string]interface{}) error {
-	if ac.Before != nil {
-		if err := ac.Before(); err != nil {
+	if ac.before != nil {
+		if err = ac.before(); err != nil {
 			return err
 		}
 	}
 
-	if ac.P != nil {
-		ac.P = p
+	if err = ac.Base.Exec(worker); err != nil {
+		return err
 	}
 
-	if ac.P == nil {
-		fmt.Fprintf(os.Stderr, "need a template provider\n")
-		os.Exit(1)
-	}
-
-	if len(ac.To) > 0 {
-		path += ac.To + "/"
-	}
-	if len(ac.Template) > 0 {
-		if ac.Binder == nil {
-			ac.Binder = binder
-		} else {
-			for key, val := range binder {
-				if _, ok := ac.Binder[key]; !ok {
-					ac.Binder[key] = val
-				}
-			}
-		}
-
-		if err := ac.parseAndCopy(path, ac.Template, true); err != nil {
+	if len(ac.Parse) > 0 {
+		if err := ac.parseAndCopy(ac.Path, ac.Parse, true); err != nil {
 			return err
 		}
 	}
 
 	if len(ac.Copy) > 0 {
-		if err := ac.parseAndCopy(path, ac.Copy, false); err != nil {
+		if err := ac.parseAndCopy(ac.Path, ac.Copy, false); err != nil {
 			return err
 		}
 	}
 
 	for _, v := range ac.Actions {
-		if err := v.Exec(path, ac.P, ac.Binder); err != nil {
+		if err := v.Exec(ac); err != nil {
 			return err
 		}
 	}
 
-	if ac.After != nil {
-		return ac.After()
+	if ac.after != nil {
+		if err = ac.after(); err != nil {
+			return err
+		}
 	}
 
-	return nil
+	return
 }
 
 func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
@@ -112,7 +82,7 @@ func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 		}
 		defer dstFd.Close()
 
-		data := ac.P.ReadFile(srcName)
+		data := ac.p.ReadFile(srcName)
 		if !isTmpl {
 			_, err = io.Copy(dstFd, strings.NewReader(string(data)))
 			if err != nil {

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +23,7 @@ var modelCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		rtinfo.Binder()["command"] = args[0]
+		// rtinfo.Binder()["command"] = args[0]
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {

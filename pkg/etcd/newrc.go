@@ -1,12 +1,12 @@
 package etcd
 
-import "github.com/itozll/go-skep/pkg/model/entity"
+import "github.com/itozll/go-skep/pkg/command/generator"
 
-var NewEtc = &entity.New{
-	Resource: entity.Resource{
-		Actions: []*entity.Action{
+var NewEtc = &generator.New{
+	Resource: generator.Resource{
+		Actions: []*generator.Action{
 			{
-				Template: []string{
+				Parse: []string{
 					"README:.md",
 					"Makefile",
 					"main_go::main.go",
@@ -18,15 +18,19 @@ var NewEtc = &entity.New{
 				},
 			},
 			{
-				To: "app/cmd",
-				Template: []string{
+				Base: generator.Base{
+					Path: "app/cmd",
+				},
+				Parse: []string{
 					"cmdroot::root.go",
 					"cmdserver::server.go",
 				},
 			},
 			{
-				To: "app/internal/runtime/rtinfo",
-				Template: []string{
+				Base: generator.Base{
+					Path: "app/internal/runtime/rtinfo",
+				},
+				Parse: []string{
 					"context_go::context.go",
 				},
 				Copy: []string{

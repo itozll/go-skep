@@ -1,1 +1,1 @@
-# {{ .snake_app_name -}}
+# {{ .app_name -}}

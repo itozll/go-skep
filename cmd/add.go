@@ -6,7 +6,7 @@ package cmd
 
 import (
 	"github.com/itozll/go-skep/pkg/process"
-	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
@@ -18,14 +18,14 @@ var addCmd = &cobra.Command{
 	SilenceUsage: true,
 
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		data := process.ReadFile(rtinfo.ConfigFile)
-		m := rtinfo.Binder()
-		return yaml.Unmarshal(data, &m)
+		data := process.ReadFile(initd.ConfigFile)
+		return yaml.Unmarshal(data, initd.Binder)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	addCmd.PersistentFlags().AddFlag(rtinfo.FlagParent)
+	addCmd.PersistentFlags().String("parent", "root", `variable name of parent command for this command`)
+
 }

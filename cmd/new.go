@@ -9,14 +9,19 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itozll/go-skep/pkg/command/generator"
 	"github.com/itozll/go-skep/pkg/etcd"
-	"github.com/itozll/go-skep/pkg/model"
-	"github.com/itozll/go-skep/pkg/model/entity"
 	"github.com/itozll/go-skep/pkg/process"
-	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+)
+
+var (
+	file     string
+	data     string
+	fileType string
 )
 
 // newCmd represents the new command
@@ -29,23 +34,20 @@ var newCmd = &cobra.Command{
 `, appName, appName),
 	SilenceUsage: true,
 
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) != 1 {
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if len(args) > 1 {
 			cmd.Help()
 			os.Exit(1)
 		}
-
-		rtinfo.Workspace = args[0]
-		return nil
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var entityNew *entity.New
+		var entityNew *generator.New
 
 		switch {
-		case rtinfo.File != "":
-			data := process.ReadFile(rtinfo.File)
-			switch rtinfo.FileType {
+		case file != "":
+			data := process.ReadFile(file)
+			switch fileType {
 			case "yaml":
 				err := yaml.Unmarshal([]byte(data), entityNew)
 				rtstatus.ExitIfError(err)
@@ -54,27 +56,27 @@ var newCmd = &cobra.Command{
 				rtstatus.ExitIfError(err)
 			}
 
-		case rtinfo.Data != "":
+		case data != "":
 			// --data '{}'
-			err := json.Unmarshal([]byte(rtinfo.Data), &entityNew)
+			err := json.Unmarshal([]byte(data), &entityNew)
 			rtstatus.ExitIfError(err)
 
 		default:
 			entityNew = etcd.NewEtc
 		}
 
-		entityNew.Parse()
-		return model.NewNew(entityNew).Command().Exec()
+		return entityNew.Worker(cmd, args).Exec()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(newCmd)
 
-	newCmd.Flags().AddFlag(rtinfo.FlagGoVersion)
-	newCmd.Flags().AddFlag(rtinfo.FlagSkipGit)
-	newCmd.Flags().AddFlag(rtinfo.FlagGroup)
-	newCmd.Flags().AddFlag(rtinfo.FlagJSONData)
-	newCmd.Flags().AddFlag(rtinfo.FlagFile)
-	newCmd.Flags().AddFlag(rtinfo.FlagFileType)
+	newCmd.Flags().String("group", initd.DefaultGroup, "group name.")
+	newCmd.Flags().String("go", initd.DefaultGoVersion, "the golang version used by the project.")
+	newCmd.Flags().Bool("skip-git", false, "do not initialize a git repository.")
+	newCmd.Flags().StringVarP(&data, "json", "", "", "customize project with json.")
+	newCmd.Flags().StringVarP(&file, "file", "f", "", "customize project with file.")
+	newCmd.Flags().StringVarP(&fileType, "file-type", "", "yaml", "file type, support json/yaml")
+	// newCmd.Flags().String("parent", "root", `variable name of parent command for this command`)
 }

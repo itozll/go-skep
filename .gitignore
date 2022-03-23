@@ -10,8 +10,6 @@
 *.log
 .idea
 
-go-skep
-
 # Test binary, built with `go test -c`
 *.test
 *.txt

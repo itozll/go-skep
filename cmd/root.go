@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	_ "github.com/itozll/go-skep/internal/template"
-	"github.com/itozll/go-skep/pkg/runtime/rtinfo"
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ var appName = filepath.Base(os.Args[0])
 var rootCmd = &cobra.Command{
 	Use:     appName,
 	Short:   "scaffolding for go projects",
-	Version: rtinfo.Version,
+	Version: initd.Version,
 }
 
 func Execute() {

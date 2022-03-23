@@ -27,5 +27,5 @@ var {{ .command }}Cmd = &cobra.Command{
 }
 
 func init() {
-	{{ .parent_cmd }}Cmd.AddCommand({{ .command }}Cmd)
+	{{ .parent }}Cmd.AddCommand({{ .command }}Cmd)
 }

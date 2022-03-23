@@ -1,4 +1,4 @@
 module {{ .github }}
 
-go {{ .go }}
+go {{ .go_version }}
 
