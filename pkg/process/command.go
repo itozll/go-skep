@@ -1,9 +1,12 @@
 package process
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
+	"strings"
 
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 )
 
@@ -13,7 +16,6 @@ func Chdir(path string) {
 
 func Run(a ...[]string) error {
 	for _, cmd := range a {
-
 		if err := Command(cmd)(); err != nil {
 			return err
 		}
@@ -35,20 +37,48 @@ func Command(a []string) func() error {
 		arg = a[1:]
 	}
 
-	return func() error {
+	return func() (err error) {
+		var buffer bytes.Buffer
+
+		if initd.Verbose {
+			for idx, arg := range a {
+				if idx != 0 {
+					buffer.WriteByte(' ')
+				}
+
+				if strings.Contains(arg, " ") {
+					buffer.WriteByte('"')
+					buffer.WriteString(arg)
+					buffer.WriteByte('"')
+				} else {
+					buffer.WriteString(arg)
+				}
+			}
+
+			rtstatus.Info("Run", "%s", buffer.String())
+		}
+
+		var stdout bytes.Buffer
+
 		cmd := exec.Command(name, arg...)
-		cmd.Stderr = os.Stderr
-		rtstatus.ExitIfError(cmd.Run())
+		cmd.Stderr = &stdout
+		if initd.Verbose {
+			cmd.Stdout = &stdout
+		}
 
-		return nil
-	}
-}
+		if err = cmd.Run(); err != nil {
+			if !initd.Verbose {
+				rtstatus.Info("Run", "%s", buffer.String())
+			}
 
-func Commands(a [][]string) func() error {
-	return func() error {
-		for _, cmd := range a {
-			if err := Command(cmd)(); err != nil {
-				return err
+			rtstatus.Printf(os.Stdout, stdout.String())
+			os.Exit(1)
+		}
+
+		if initd.Verbose {
+			str := stdout.String()
+			if len(str) > 0 {
+				rtstatus.Printf(os.Stdout, stdout.String())
 			}
 		}
 

@@ -10,5 +10,5 @@ type Provider interface {
 	ReadDir(string) []fs.DirEntry
 }
 
-func WithFS(pathPrefix string, _f embed.FS) Provider
+func WithFS(pathPrefix string, f embed.FS) Provider
 func WithFileSystem(pathPrefix string) Provider

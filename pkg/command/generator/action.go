@@ -8,14 +8,17 @@ import (
 	"text/template"
 
 	"github.com/itozll/go-skep/pkg/command"
+	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 )
 
 type Action struct {
-	Base
+	Base `json:"base,omitempty" yaml:"base"`
 
 	Parse []string `json:"parse,omitempty" yaml:"parse"`
 	Copy  []string `json:"copy,omitempty" yaml:"copy"`
+
+	Scripts [][]string `json:"scripts,omitempty" yaml:"scripts"`
 
 	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
 }
@@ -23,41 +26,43 @@ type Action struct {
 func (ac *Action) Exec(worker command.WorkerHandler) (err error) {
 	ac.init()
 
-	if ac.before != nil {
-		if err = ac.before(); err != nil {
-			return err
-		}
+	if err = ac.before(); err != nil {
+		return
 	}
 
 	if err = ac.Base.Exec(worker); err != nil {
-		return err
+		return
 	}
 
 	if len(ac.Parse) > 0 {
-		if err := ac.parseAndCopy(ac.Path, ac.Parse, true); err != nil {
-			return err
+		if ac.p == nil {
+			return errors.New("need the template provider")
+		}
+
+		if err = ac.parseAndCopy(ac.Path, ac.Parse, true); err != nil {
+			return
 		}
 	}
 
 	if len(ac.Copy) > 0 {
-		if err := ac.parseAndCopy(ac.Path, ac.Copy, false); err != nil {
-			return err
+		if err = ac.parseAndCopy(ac.Path, ac.Copy, false); err != nil {
+			return
+		}
+	}
+
+	if len(ac.Scripts) > 0 {
+		if err = process.Run(ac.Scripts...); err != nil {
+			return
 		}
 	}
 
 	for _, v := range ac.Actions {
-		if err := v.Exec(ac); err != nil {
-			return err
+		if err = v.Exec(ac); err != nil {
+			return
 		}
 	}
 
-	if ac.after != nil {
-		if err = ac.after(); err != nil {
-			return err
-		}
-	}
-
-	return
+	return ac.after()
 }
 
 func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {

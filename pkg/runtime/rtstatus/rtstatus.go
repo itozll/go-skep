@@ -18,8 +18,12 @@ func Error(format string, args ...interface{}) {
 	panic("aa")
 }
 
+func Printf(f *os.File, format string, args ...interface{}) {
+	fmt.Fprintf(f, format+"\n", args...)
+}
+
 func Info(note string, format string, args ...interface{}) {
-	fmt.Printf(" \033[32m"+note+"\033[0m  "+format+"\n", args...)
+	fmt.Printf(" \033[32m"+note+"\033[0m "+format+"\n", args...)
 }
 
 func Fatal(format string, args ...interface{}) {

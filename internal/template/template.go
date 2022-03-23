@@ -4,6 +4,7 @@ import (
 	"embed"
 	_ "unsafe"
 
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/itozll/go-skep/pkg/tmpl"
 )
 
@@ -20,5 +21,5 @@ func withFS(path string, _f embed.FS) tmpl.Provider {
 }
 
 func init() {
-	tmpl.AddTemplateProvider("base", builtin())
+	tmpl.AddTemplateProvider(initd.DefaultTemplateName, builtin())
 }

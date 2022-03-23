@@ -1,8 +1,6 @@
 package generator
 
 import (
-	"errors"
-
 	"github.com/itozll/go-skep/pkg/command"
 	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/tmpl"
@@ -65,10 +63,6 @@ func (b *Base) Exec(worker command.WorkerHandler) error {
 		b.p = worker.Provider()
 	} else {
 		b.p = tmpl.GetTemplateProvider(b.Template)
-	}
-
-	if b.p == nil {
-		return errors.New("need the template provider")
 	}
 
 	if b.Binder == nil {

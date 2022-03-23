@@ -6,9 +6,7 @@ var (
 	DefaultCommand   = "root"
 	SkipGit          = false
 
-	Data     string
-	File     string
-	FileType string
+	Verbose bool
 
 	DefaultTemplateName = "base"
 	ConfigFile          = ".skeprc"

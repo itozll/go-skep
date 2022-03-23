@@ -33,7 +33,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.go-skep.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&initd.Verbose, "verbose", "V", false, "add more details to output logging")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
