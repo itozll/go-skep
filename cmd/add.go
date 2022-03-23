@@ -27,5 +27,4 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 
 	addCmd.PersistentFlags().String("parent", "root", `variable name of parent command for this command`)
-
 }

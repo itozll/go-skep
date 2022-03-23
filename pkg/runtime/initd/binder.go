@@ -62,27 +62,30 @@ func (b *bind) Setup(workspace string) error {
 		return errors.New("repos name must not be empty")
 	}
 
-	Binder.Workspace = workspace
 	fields := strings.Split(workspace, "/")
 
 	if len(fields) > 2 {
 		return errors.New("repos name cannot have more '/'")
 	}
 
+	var group string
 	if len(fields) == 1 {
 		Binder.Project = strings.TrimSpace(fields[0])
-		Binder.Group = DefaultGroup
+		group = DefaultGroup
 	} else {
 		Binder.Project = strings.TrimSpace(fields[1])
+		group = strings.TrimSpace(fields[0])
+	}
 
-		if len(Binder.Group) == 0 {
-			Binder.Group = strings.TrimSpace(fields[0])
-		}
+	if len(Binder.Group) == 0 {
+		Binder.Group = group
 	}
 
 	if len(Binder.Group) == 0 {
 		return errors.New("group name must not be empty")
 	}
+
+	Binder.Workspace = Binder.Group + "/" + Binder.Project
 
 	Binder.AppName = Binder.Project
 	Binder.SnakeProject = strcase.ToSnake(Binder.Project)

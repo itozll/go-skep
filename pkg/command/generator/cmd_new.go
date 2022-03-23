@@ -23,7 +23,8 @@ type New struct {
 
 func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 	rc.Parse(cmd, args)
-	initd.Setup(rc.Workspace)
+	err := initd.Setup(rc.Workspace)
+	rtstatus.ExitIfError(err)
 
 	binder := initd.Binder
 	binder.Command = "server"
