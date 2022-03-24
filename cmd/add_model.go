@@ -6,14 +6,17 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/spf13/cobra"
 )
 
 // modelCmd represents the model command
 var modelCmd = &cobra.Command{
 	Use:          "model",
+	Aliases:      []string{"m"},
 	Short:        "add a model to application",
 	SilenceUsage: true,
 
@@ -23,11 +26,12 @@ var modelCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		// rtinfo.Binder()["command"] = args[0]
+		initd.Binder.Model = args[0]
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("model called")
+		log.Printf("%+v\n", initd.Binder)
 	},
 }
 

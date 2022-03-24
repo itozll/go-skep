@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -114,8 +115,7 @@ func (ac *Action) Exec(worker command.WorkerHandler) (err error) {
 
 func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 	if len(path) > 0 {
-		if err := os.MkdirAll(path, os.ModePerm); err != nil && os.IsNotExist(err) {
-			rtstatus.Error("%s (%s)", err, path)
+		if err := process.MkdirAll(path); err != nil {
 			return err
 		}
 	}
@@ -127,6 +127,12 @@ func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 
 		dstName, srcName := splitName(name)
 		dstPath := path + dstName
+
+		if strings.Contains(dstName, "/") {
+			if err := process.MkdirAll(filepath.Dir(dstPath)); err != nil {
+				return err
+			}
+		}
 
 		dstFd, err := os.Create(dstPath)
 		if err != nil {
@@ -172,18 +178,7 @@ func splitName(name string) (dst, src string) {
 		return
 	}
 
-	if l > 2 {
-		// name::new-name
-		if len(names[2]) > 0 {
-			dst = names[2]
-			return
-		}
-	}
-
 	// name:<suffix> -> model:go change to model.go
-	if len(names[1]) > 0 {
-		dst += names[1]
-	}
-
+	dst = names[1]
 	return
 }

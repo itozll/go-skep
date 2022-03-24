@@ -30,7 +30,11 @@ type bind struct {
 
 	Workspace string `json:"workspace,omitempty" yaml:"workspace"`
 
+	// for add command <Command>
 	Command string `json:"command,omitempty" yaml:"-"`
+
+	// for add model <Model>
+	Model string `json:"model,omitempty" yaml:"-"`
 
 	Github       string `json:"github,omitempty" yaml:"github"`
 	Group        string `json:"group,omitempty" yaml:"group"`

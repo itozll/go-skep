@@ -19,7 +19,16 @@ var addCmd = &cobra.Command{
 
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		data := process.ReadFile(initd.ConfigFile)
-		return yaml.Unmarshal(data, initd.Binder)
+		err := yaml.Unmarshal(data, initd.Binder)
+		if err != nil {
+			return err
+		}
+
+		if parent, _ := cmd.Flags().GetString("parent"); parent != "" {
+			initd.Binder.Parent = parent
+		}
+
+		return nil
 	},
 }
 

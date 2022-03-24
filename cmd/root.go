@@ -13,7 +13,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var appName = filepath.Base(os.Args[0])
+var (
+	file     string
+	data     string
+	fileType string
+
+	appName = filepath.Base(os.Args[0])
+)
 
 var rootCmd = &cobra.Command{
 	Use:     appName,

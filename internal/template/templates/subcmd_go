@@ -7,9 +7,8 @@ import (
 )
 
 var {{ .command }}Cmd = &cobra.Command{
-	Use:     "{{ .command }} [flags] <workspace>",
-	Aliases: []string{"n"},
-	Short:   "create an go workspace",
+	Use:          "{{ .command }} [flags] <workspace>",
+	Short:        "create an go workspace",
 	SilenceUsage: true,
 
 	// PreRunE: func(cmd *cobra.Command, args []string) error {

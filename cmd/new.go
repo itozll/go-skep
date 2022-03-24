@@ -18,12 +18,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var (
-	file     string
-	data     string
-	fileType string
-)
-
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:     "new [flags] <workspace>",

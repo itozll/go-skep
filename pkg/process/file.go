@@ -15,3 +15,13 @@ func ReadFile(name string) []byte {
 
 	return data
 }
+
+func MkdirAll(path string) error {
+	if err := os.MkdirAll(path, os.ModePerm); err != nil &&
+		(os.IsNotExist(err) || os.IsPermission(err)) {
+		rtstatus.Error("%s (%s)", err, path)
+		return err
+	}
+
+	return nil
+}

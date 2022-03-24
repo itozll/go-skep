@@ -2,7 +2,7 @@ package main
 
 import "{{ .github -}}/app/cmd"
 
-//go:generate bash generator.sh
+//go:generate bash scripts/generator.sh
 
 // @title base
 // @version 0.1.0

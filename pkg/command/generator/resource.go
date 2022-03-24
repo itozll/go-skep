@@ -16,6 +16,10 @@ type Resource struct {
 	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
 }
 
+func (rc *Resource) Append(ac *Action) {
+	rc.Actions = append(rc.Actions, ac)
+}
+
 func (rc *Resource) Worker() *command.Worker {
 	c := &command.Worker{
 		Binder: rc.Binder,

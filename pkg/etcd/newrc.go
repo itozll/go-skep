@@ -7,30 +7,30 @@ var NewEtc = &generator.New{
 		Actions: []*generator.Action{
 			{
 				Parse: []string{
-					"README:.md",
+					"README:README.md",
 					"Makefile",
-					"main_go::main.go",
-					"gomod::go.mod",
+					"main_go:main.go",
+					"gomod:go.mod",
 				},
 				Copy: []string{
-					"gitignore::.gitignore",
-					"generator:.sh",
+					"gitignore:.gitignore",
+					"generator:scripts/generator.sh",
 				},
 			},
 			{
 				Path: "app/cmd",
 				Parse: []string{
-					"cmdroot::root.go",
-					"cmdserver::server.go",
+					"rootcmd_go:root.go",
+					"subcmd_go:server.go",
 				},
 			},
 			{
 				Path: "app/internal/runtime/rtinfo",
 				Parse: []string{
-					"context_go::context.go",
+					"context_go:context.go",
 				},
 				Copy: []string{
-					"rtinfo_go::rtinfo.go",
+					"rtinfo_go:rtinfo.go",
 				},
 			},
 		},
