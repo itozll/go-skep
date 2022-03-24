@@ -34,6 +34,8 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 
 	before := worker.Before
 	worker.Before = func() error {
+		rtstatus.Info("Start", "init "+binder.Project)
+
 		_, err := os.Stat(binder.Project)
 		if err == nil {
 			rtstatus.Fatal("'" + binder.Project + "' exists.")

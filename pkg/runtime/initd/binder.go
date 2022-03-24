@@ -32,13 +32,12 @@ type bind struct {
 
 	Command string `json:"command,omitempty" yaml:"-"`
 
-	Github        string `json:"github,omitempty" yaml:"github"`
-	Group         string `json:"group,omitempty" yaml:"group"`
-	Project       string `json:"project,omitempty" yaml:"project"`
-	OriginProject string `json:"origin_project,omitempty" yaml:"origin_project"`
-	SnakeProject  string `json:"snake_project,omitempty" yaml:"snake_project"`
-	KebabProject  string `json:"kebab_project,omitempty" yaml:"kebab_project"`
-	CamelProject  string `json:"camel_project,omitempty" yaml:"camel_project"`
+	Github       string `json:"github,omitempty" yaml:"github"`
+	Group        string `json:"group,omitempty" yaml:"group"`
+	Project      string `json:"project,omitempty" yaml:"project"`
+	SnakeProject string `json:"snake_project,omitempty" yaml:"snake_project"`
+	KebabProject string `json:"kebab_project,omitempty" yaml:"kebab_project"`
+	CamelProject string `json:"camel_project,omitempty" yaml:"camel_project"`
 
 	GoVersion string `json:"go_version,omitempty" yaml:"go_version"`
 }
@@ -71,10 +70,10 @@ func (b *bind) Setup(workspace string) error {
 
 	var group string
 	if len(fields) == 1 {
-		Binder.OriginProject = strings.TrimSpace(fields[0])
+		Binder.Project = strings.TrimSpace(fields[0])
 		group = DefaultGroup
 	} else {
-		Binder.OriginProject = strings.TrimSpace(fields[1])
+		Binder.Project = strings.TrimSpace(fields[1])
 		group = strings.TrimSpace(fields[0])
 	}
 
@@ -89,7 +88,6 @@ func (b *bind) Setup(workspace string) error {
 	Binder.SnakeProject = strcase.ToSnake(Binder.Project)
 	Binder.KebabProject = strcase.ToKebab(Binder.Project)
 	Binder.CamelProject = strcase.ToCamel(Binder.Project)
-	Binder.Project = Binder.KebabProject
 	Binder.AppName = Binder.Project
 	Binder.Workspace = Binder.Group + "/" + Binder.Project
 

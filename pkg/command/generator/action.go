@@ -9,6 +9,7 @@ import (
 
 	"github.com/itozll/go-skep/pkg/command"
 	"github.com/itozll/go-skep/pkg/process"
+	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 	"github.com/itozll/go-skep/pkg/tmpl"
 )
@@ -151,7 +152,9 @@ func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 			}
 		}
 
-		rtstatus.Info("Create", dstPath)
+		if initd.Verbose {
+			rtstatus.Info("Create", dstPath)
+		}
 	}
 
 	return nil

@@ -15,7 +15,6 @@ func ExitIfError(err error) {
 
 func Error(format string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, " ** \033[31;1mError\033[0m: "+format+"\n", args...)
-	panic("aa")
 }
 
 func Printf(f *os.File, format string, args ...interface{}) {
