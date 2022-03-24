@@ -68,7 +68,6 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 		}
 
 		os.WriteFile(initd.ConfigFile, data, 0644)
-
 		return process.Run(cmds...)
 	}
 
