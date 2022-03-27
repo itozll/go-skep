@@ -7,8 +7,8 @@ package cmd
 import (
 	"os"
 
+	"github.com/itozll/go-skep/internal/etcd"
 	"github.com/itozll/go-skep/pkg/command/generator"
-	"github.com/itozll/go-skep/pkg/etcd"
 	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/spf13/cobra"
 )

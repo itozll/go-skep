@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itozll/go-skep/internal/etcd"
 	"github.com/itozll/go-skep/pkg/command/generator"
-	"github.com/itozll/go-skep/pkg/etcd"
 	"github.com/itozll/go-skep/pkg/flag"
 	"github.com/spf13/cobra"
 )
