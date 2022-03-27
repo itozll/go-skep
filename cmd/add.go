@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"github.com/itozll/go-skep/pkg/flag"
 	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/spf13/cobra"
@@ -24,10 +25,7 @@ var addCmd = &cobra.Command{
 			return err
 		}
 
-		if parent, _ := cmd.Flags().GetString("parent"); parent != "" {
-			initd.Binder.Parent = parent
-		}
-
+		flag.Parent.IfChanged(&initd.Binder.Parent)
 		return nil
 	},
 }
@@ -35,5 +33,5 @@ var addCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	addCmd.PersistentFlags().String("parent", "root", `variable name of parent command for this command`)
+	addCmd.PersistentFlags().AddFlag(flag.Parent.Flag())
 }

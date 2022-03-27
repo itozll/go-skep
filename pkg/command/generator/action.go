@@ -9,31 +9,31 @@ import (
 	"text/template"
 
 	"github.com/itozll/go-skep/pkg/command"
+	"github.com/itozll/go-skep/pkg/flag"
 	"github.com/itozll/go-skep/pkg/process"
-	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 	"github.com/itozll/go-skep/pkg/tmpl"
 )
 
 type Action struct {
-	Before []string `json:"before,omitempty" yaml:"before"`
-	After  []string `json:"after,omitempty" yaml:"after"`
+	Before []string `json:"before,omitempty" yaml:"before,omitempty"`
+	After  []string `json:"after,omitempty" yaml:"after,omitempty"`
 
 	before func() error
 	after  func() error
 
-	Binder map[string]interface{} `json:"binder,omitempty" yaml:"binder"`
-	Path   string                 `json:"path,omitempty" yaml:"path"`
+	Binder map[string]interface{} `json:"binder,omitempty" yaml:"binder,omitempty"`
+	Path   string                 `json:"path,omitempty" yaml:"path,omitempty"`
 
-	Template string `json:"template,omitempty" yaml:"template"`
+	Template string `json:"template,omitempty" yaml:"template,omitempty"`
 	p        tmpl.Provider
 
-	Parse []string `json:"parse,omitempty" yaml:"parse"`
-	Copy  []string `json:"copy,omitempty" yaml:"copy"`
+	Parse []string `json:"parse,omitempty" yaml:"parse,omitempty"`
+	Copy  []string `json:"copy,omitempty" yaml:"copy,omitempty"`
 
-	Scripts [][]string `json:"scripts,omitempty" yaml:"scripts"`
+	Scripts [][]string `json:"scripts,omitempty" yaml:"scripts,omitempty"`
 
-	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
+	Actions []*Action `json:"actions,omitempty" yaml:"actions,omitempty"`
 }
 
 func (ac *Action) Dir() string                       { return ac.Path }
@@ -135,9 +135,7 @@ func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 		}
 
 		dstFd, err := os.Create(dstPath)
-		if err != nil {
-			return err
-		}
+		rtstatus.ExitIfError(err)
 		defer dstFd.Close()
 
 		data := ac.p.ReadFile(srcName)
@@ -158,7 +156,7 @@ func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 			}
 		}
 
-		if initd.Verbose {
+		if flag.Verbose.Value() {
 			rtstatus.Info("Create", dstPath)
 		}
 	}
@@ -168,17 +166,12 @@ func (ac *Action) parseAndCopy(path string, list []string, isTmpl bool) error {
 
 func splitName(name string) (dst, src string) {
 	names := strings.Split(name, ":")
-	src = names[0]
+	src = strings.TrimSpace(names[0])
 	dst = src
 
-	l := len(names)
-
-	// name
-	if l == 1 {
-		return
+	if len(names) > 1 {
+		dst = strings.TrimSpace(names[1])
 	}
 
-	// name:<suffix> -> model:go change to model.go
-	dst = names[1]
 	return
 }

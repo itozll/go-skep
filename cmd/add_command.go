@@ -5,16 +5,12 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/itozll/go-skep/pkg/command/generator"
 	"github.com/itozll/go-skep/pkg/etcd"
-	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/initd"
-	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 )
 
 // commandCmd represents the command command
@@ -34,41 +30,17 @@ var commandCmd = &cobra.Command{
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var entityCommand *generator.Resource
-
-		switch {
-		case file != "":
-			data := process.ReadFile(file)
-			switch fileType {
-			case "yaml":
-				err := yaml.Unmarshal([]byte(data), entityCommand)
-				rtstatus.ExitIfError(err)
-			case "json":
-				err := json.Unmarshal([]byte(data), &entityCommand)
-				rtstatus.ExitIfError(err)
-			}
-
-		case data != "":
-			// --data '{}'
-			err := json.Unmarshal([]byte(data), &entityCommand)
-			rtstatus.ExitIfError(err)
-
-		default:
-			entityCommand = etcd.CommandEtc
-		}
+		var entityCommand generator.Resource
 
 		name := args[0]
 		if initd.Binder.Parent != initd.DefaultCommand {
 			name = initd.Binder.Parent + "_" + name
 		}
 
-		entityCommand.Append(&generator.Action{
-			Path: "app/cmd",
-			Parse: []string{
-				"subcmd_go::" + name + ".go",
-			},
-		})
+		v := initd.MapBinder()
+		v["file_name"] = name
 
+		loadConfig(&entityCommand, parse(etcd.CommandEtc, v))
 		return entityCommand.Worker().Exec()
 	},
 }

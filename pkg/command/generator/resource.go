@@ -7,13 +7,13 @@ import (
 )
 
 type Resource struct {
-	Before []string `json:"before,omitempty" yaml:"before"`
-	After  []string `json:"after,omitempty" yaml:"after"`
+	Before []string `json:"before,omitempty" yaml:"before,omitempty"`
+	After  []string `json:"after,omitempty" yaml:"after,omitempty"`
 
-	Provider string                 `json:"provider,omitempty" yaml:"provider"`
-	Binder   map[string]interface{} `json:"binder,omitempty" yaml:"binder"`
+	Provider string                 `json:"provider,omitempty" yaml:"provider,omitempty"`
+	Binder   map[string]interface{} `json:"binder,omitempty" yaml:"binder,omitempty"`
 
-	Actions []*Action `json:"actions,omitempty" yaml:"actions"`
+	Actions []*Action `json:"actions,omitempty" yaml:"actions,omitempty"`
 }
 
 func (rc *Resource) Append(ac *Action) {

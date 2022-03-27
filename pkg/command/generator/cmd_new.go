@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/itozll/go-skep/pkg/command"
+	"github.com/itozll/go-skep/pkg/flag"
 	"github.com/itozll/go-skep/pkg/process"
 	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
@@ -14,11 +15,11 @@ import (
 type New struct {
 	Resource `json:",inline" yaml:",inline"`
 
-	Workspace string `json:"workspace,omitempty" yaml:"workspace"`
+	Workspace string `json:"workspace,omitempty" yaml:"workspace,omitempty"`
 
-	SkipGit   bool   `json:"skip_git,omitempty" yaml:"skip_git"`
-	Group     string `json:"group,omitempty" yaml:"group"`
-	GoVersion string `json:"go_version,omitempty" yaml:"go_version"`
+	SkipGit   bool   `json:"skip_git,omitempty" yaml:"skip_git,omitempty"`
+	Group     string `json:"group,omitempty" yaml:"group,omitempty"`
+	GoVersion string `json:"go_version,omitempty" yaml:"go_version,omitempty"`
 }
 
 func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
@@ -77,19 +78,9 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 }
 
 func (rc *New) Parse(cmd *cobra.Command, args []string) {
-	flags := cmd.Flags()
-
-	if flags.Changed("group") {
-		rc.Group, _ = cmd.Flags().GetString("group")
-	}
-
-	if flags.Changed("skip-git") {
-		rc.SkipGit, _ = cmd.Flags().GetBool("skip-git")
-	}
-
-	if flags.Changed("go") {
-		rc.GoVersion, _ = cmd.Flags().GetString("go")
-	}
+	flag.Group.IfChanged(&rc.Group)
+	flag.SkipGit.IfChanged(&rc.SkipGit)
+	flag.Go.IfChanged(&rc.GoVersion)
 
 	if len(args) == 1 {
 		rc.Workspace = args[0]

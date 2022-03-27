@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/itozll/go-skep/pkg/runtime/initd"
+	"github.com/itozll/go-skep/pkg/flag"
 	"github.com/itozll/go-skep/pkg/runtime/rtstatus"
 )
 
@@ -39,8 +39,9 @@ func Command(a []string) func() error {
 
 	return func() (err error) {
 		var buffer bytes.Buffer
+		verbose := flag.Verbose.Value()
 
-		if initd.Verbose {
+		if verbose {
 			for idx, arg := range a {
 				if idx != 0 {
 					buffer.WriteByte(' ')
@@ -62,12 +63,12 @@ func Command(a []string) func() error {
 
 		cmd := exec.Command(name, arg...)
 		cmd.Stderr = &stdout
-		if initd.Verbose {
+		if verbose {
 			cmd.Stdout = &stdout
 		}
 
 		if err = cmd.Run(); err != nil {
-			if !initd.Verbose {
+			if !verbose {
 				rtstatus.Info("Run", "%s", buffer.String())
 			}
 
@@ -75,7 +76,7 @@ func Command(a []string) func() error {
 			os.Exit(1)
 		}
 
-		if initd.Verbose {
+		if verbose {
 			str := stdout.String()
 			if len(str) > 0 {
 				rtstatus.Printf(os.Stdout, stdout.String())

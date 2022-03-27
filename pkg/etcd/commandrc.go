@@ -1,5 +1,7 @@
 package etcd
 
-import "github.com/itozll/go-skep/pkg/command/generator"
-
-var CommandEtc = &generator.Resource{}
+var CommandEtc = []byte(`
+actions:
+- parse:
+  - subcmd_go : app/cmd/{{- .file_name -}}.go
+`)
