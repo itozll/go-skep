@@ -25,8 +25,9 @@ type Action struct {
 	Binder map[string]interface{} `json:"binder,omitempty" yaml:"binder,omitempty"`
 	Path   string                 `json:"path,omitempty" yaml:"path,omitempty"`
 
-	Template string `json:"template,omitempty" yaml:"template,omitempty"`
-	p        tmpl.Provider
+	Template     string `json:"template,omitempty" yaml:"template,omitempty"`
+	TemplatePath string `json:"template_path,omitempty" yaml:"template_path,omitempty"`
+	p            tmpl.Provider
 
 	Parse []string `json:"parse,omitempty" yaml:"parse,omitempty"`
 	Copy  []string `json:"copy,omitempty" yaml:"copy,omitempty"`
@@ -46,9 +47,14 @@ func (ac *Action) init() {
 }
 
 func (ac *Action) exec(worker command.WorkerHandler) error {
-	if len(ac.Template) == 0 {
+	switch {
+	default:
 		ac.p = worker.Provider()
-	} else {
+
+	case ac.TemplatePath != "":
+		ac.p = tmpl.WithFileSystem(strings.TrimRight(ac.TemplatePath, "/") + "/")
+
+	case ac.Template != "":
 		ac.p = tmpl.GetTemplateProvider(ac.Template)
 	}
 

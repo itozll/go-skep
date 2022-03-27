@@ -1,13 +1,16 @@
 package flag
 
 import (
+	"fmt"
+
 	"github.com/itozll/go-skep/pkg/runtime/initd"
 	"github.com/spf13/pflag"
 )
 
 var (
 	Verbose  = newFlag((*pflag.FlagSet).BoolVarP, "verbose", "V", false, "add more details to output logging")
-	SkipGit  = newFlag((*pflag.FlagSet).BoolVarP, "skip-git", "", false, "do not initialize a git repository")
+	SkipGit  = newFlag((*pflag.FlagSet).BoolVarP, "skip-git", "", false, "do not initialize a git repository. if --local is set, the default setting is true")
+	Local    = newFlag((*pflag.FlagSet).BoolVarP, "local", "", false, "initialize git repository on current directory")
 	Group    = newFlag((*pflag.FlagSet).StringVarP, "group", "g", initd.DefaultGroup, "group name")
 	Go       = newFlag((*pflag.FlagSet).StringVarP, "go", "", initd.DefaultGoVersion, "the golang version used by the project.")
 	JSONData = newFlag((*pflag.FlagSet).StringVarP, "json", "", "", "customize project with json.")
@@ -37,10 +40,15 @@ func newFlag[T any](pf handlerNewFlag[T], name, shorthand string, value T, usage
 }
 
 func (f *flag[T]) Value() T          { return *f.v }
+func (f *flag[T]) Set(v T)           { *f.v = v; f.f.Changed = true }
 func (f *flag[T]) Flag() *pflag.Flag { return f.f }
 func (f *flag[T]) Changed() bool     { return f.f.Changed }
 func (f *flag[T]) IfChanged(v *T) {
 	if f.f.Changed {
 		*v = *f.v
 	}
+}
+
+func (f *flag[T]) Show() {
+	fmt.Printf("value: %v, changed: %v\n", *f.v, f.f.Changed)
 }

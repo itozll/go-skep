@@ -31,19 +31,26 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 	binder.Command = "server"
 
 	worker := rc.Resource.Worker()
-	worker.Path = binder.Project + "/"
+	onDir := flag.Local.Value()
+	if onDir {
+		worker.Path = "./"
+	} else {
+		worker.Path = binder.Project + "/"
+	}
 
 	before := worker.Before
 	worker.Before = func() error {
 		rtstatus.Info("Start", "init "+binder.Project)
 
-		_, err := os.Stat(binder.Project)
-		if err == nil {
-			rtstatus.Fatal("'" + binder.Project + "' exists.")
-		}
+		if !onDir {
+			_, err := os.Stat(binder.Project)
+			if err == nil {
+				rtstatus.Fatal("'" + binder.Project + "' exists.")
+			}
 
-		if !os.IsNotExist(err) {
-			rtstatus.Fatal(err.Error())
+			if !os.IsNotExist(err) {
+				rtstatus.Fatal(err.Error())
+			}
 		}
 
 		return before()
@@ -51,7 +58,9 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 
 	after := worker.After
 	worker.After = func() error {
-		process.Chdir(binder.Project)
+		if !onDir {
+			process.Chdir(binder.Project)
+		}
 
 		cmds := [][]string{{"go", "mod", "tidy"}}
 		if !rc.SkipGit {
