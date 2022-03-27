@@ -1,9 +1,11 @@
 package initd
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -14,6 +16,7 @@ import (
 
 var (
 	Binder = &bind{
+		User:      os.Getenv("USER"),
 		Generator: filepath.Base(os.Args[0]),
 		Parent:    DefaultCommand,
 		GoVersion: DefaultGoVersion,
@@ -24,6 +27,9 @@ var (
 )
 
 type bind struct {
+	User  string `json:"user,omitempty" yaml:"user"`
+	Email string `json:"email,omitempty" yaml:"email"`
+
 	Generator string `json:"generator,omitempty" yaml:"generator"`
 	AppName   string `json:"app_name,omitempty" yaml:"app_name"`
 	Parent    string `json:"parent,omitempty" yaml:"parent"`
@@ -48,9 +54,16 @@ type bind struct {
 
 func MapBinder() map[string]interface{} {
 	once.Do(func() {
-		data, _ := json.Marshal(Binder)
+		cmd := exec.Command("git", "config", "--global", "user.email")
+		var stdout bytes.Buffer
+		cmd.Stdout = &stdout
+		err := cmd.Run()
+		if err == nil {
+			Binder.Email = stdout.String()
+		}
 
-		err := json.Unmarshal(data, &mapBinder)
+		data, _ := json.Marshal(Binder)
+		err = json.Unmarshal(data, &mapBinder)
 		rtstatus.ExitIfError(err)
 	})
 
