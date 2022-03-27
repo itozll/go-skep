@@ -14,8 +14,9 @@ import (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:          "add <command>",
-	Short:        "add a command to application",
+	Use:   "add <command>",
+	Short: "add a command to application",
+
 	SilenceUsage: true,
 
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
