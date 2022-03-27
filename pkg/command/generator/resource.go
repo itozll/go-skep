@@ -24,8 +24,8 @@ func (rc *Resource) Worker() *command.Worker {
 	c := &command.Worker{
 		Binder: rc.Binder,
 		P:      tmpl.GetTemplateProvider(rc.Provider),
-		Before: process.Command(rc.Before),
-		After:  process.Command(rc.After),
+		Before: process.Commands(rc.Before),
+		After:  process.Commands(rc.After),
 	}
 
 	for _, ac := range rc.Actions {

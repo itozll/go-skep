@@ -24,6 +24,19 @@ func Run(a ...[]string) error {
 	return nil
 }
 
+func Commands(a []string) func() error {
+	return func() error {
+		for _, cmd := range a {
+			c := strings.FieldsFunc(cmd, func(c rune) bool { return c == ' ' })
+			if err := Command(c)(); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+}
+
 func Command(a []string) func() error {
 	if len(a) == 0 {
 		return func() error { return nil }

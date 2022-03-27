@@ -41,8 +41,8 @@ func (ac *Action) Provider() tmpl.Provider           { return ac.p }
 func (ac *Action) MapBinder() map[string]interface{} { return ac.Binder }
 
 func (ac *Action) init() {
-	ac.before = process.Command(ac.Before)
-	ac.after = process.Command(ac.After)
+	ac.before = process.Commands(ac.Before)
+	ac.after = process.Commands(ac.After)
 }
 
 func (ac *Action) exec(worker command.WorkerHandler) error {

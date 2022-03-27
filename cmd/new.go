@@ -34,7 +34,6 @@ var newCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var entityNew generator.New
 		loadConfig(&entityNew, etcd.NewEtc)
-
 		return entityNew.Worker(cmd, args).Exec()
 	},
 }

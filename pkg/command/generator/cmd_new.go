@@ -49,6 +49,7 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 		return before()
 	}
 
+	after := worker.After
 	worker.After = func() error {
 		process.Chdir(binder.Project)
 
@@ -62,7 +63,10 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 				[]string{"git", "commit", "-m", "Init Commit"},
 			)
 		}
-		cmds = append(cmds, rc.After)
+
+		if err = process.Run(cmds...); err != nil {
+			return err
+		}
 
 		delete(worker.Binder, "command")
 		data, err := yaml.Marshal(worker.Binder)
@@ -71,7 +75,8 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 		}
 
 		os.WriteFile(initd.ConfigFile, data, 0644)
-		return process.Run(cmds...)
+
+		return after()
 	}
 
 	return worker
