@@ -40,7 +40,7 @@ var commandCmd = &cobra.Command{
 		v := initd.MapBinder()
 		v["file_name"] = name
 
-		loadConfig(&entityCommand, parse(etcd.CommandEtc, v))
+		loadConfig(&entityCommand, parse(etcd.Get("command"), v))
 		return entityCommand.Worker().Exec()
 	},
 }

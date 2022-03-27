@@ -33,7 +33,7 @@ var newCmd = &cobra.Command{
 
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var entityNew generator.New
-		loadConfig(&entityNew, etcd.NewEtc)
+		loadConfig(&entityNew, etcd.Get("new"))
 
 		if flag.Local.Value() && !flag.SkipGit.Changed() {
 			// ignore git command if --local is set
@@ -54,4 +54,5 @@ func init() {
 	newCmd.Flags().AddFlag(flag.File.Flag())
 	newCmd.Flags().AddFlag(flag.FileType.Flag())
 	newCmd.Flags().AddFlag(flag.Local.Flag())
+	newCmd.Flags().AddFlag(flag.IncludeNew.Flag())
 }

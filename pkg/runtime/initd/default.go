@@ -10,5 +10,6 @@ var (
 
 	DefaultTemplateName = "base"
 	ConfigFile          = ".skeprc"
+	ConfigPath          = ".skep.d"
 	Version             = "v0.1.0"
 )

@@ -3,6 +3,7 @@ package generator
 import (
 	"os"
 
+	"github.com/itozll/go-skep/internal/etcd"
 	"github.com/itozll/go-skep/pkg/command"
 	"github.com/itozll/go-skep/pkg/flag"
 	"github.com/itozll/go-skep/pkg/process"
@@ -83,7 +84,14 @@ func (rc *New) Worker(cmd *cobra.Command, args []string) *command.Worker {
 			return err
 		}
 
-		os.WriteFile(initd.ConfigFile, data, 0644)
+		err = os.WriteFile(initd.ConfigFile, data, 0644)
+		rtstatus.ExitIfError(err)
+
+		if flag.IncludeNew.Value() {
+			etcd.CopyAll(initd.ConfigPath)
+		} else {
+			etcd.CopyAll(initd.ConfigPath, "new")
+		}
 
 		return after()
 	}
